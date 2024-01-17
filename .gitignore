@@ -34,3 +34,5 @@ checker
 *.exe
 *.out
 *.app
+
+toomany.txt

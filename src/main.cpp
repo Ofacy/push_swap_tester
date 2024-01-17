@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include <numeric>
 #include <optional>
@@ -49,6 +50,10 @@ void launchTest(program_opts& opts, program_params& params) {
 	int done = 0, worst = 0, best = -1, total = 0, successful = 0, ok = 0;
 	double mean, stddev;
 
+	ofstream ofs;
+	ofs.open("toomany.txt", ofstream::out | ofstream::app);
+	if (!ofs.is_open())
+		throw std::runtime_error("Could not open toomany.txt");
 	hideCursor();
 	while (done < params.iterations) {
 		generate_numbers(rng, opts, params, args, cargs);
@@ -69,6 +74,13 @@ void launchTest(program_opts& opts, program_params& params) {
 
 		if (lines <= params.objective.value_or(-1))
 			successful++;
+		else  if (params.objective.has_value() && lines > params.objective.value())
+		{
+			ofs << "Test HAS_TOO_MANY_INSTRUCTIONS " << lines << ":";
+			for (string &a : args)
+				ofs << " " << a;
+			ofs << endl;
+		}
 
 		if (lines < best || best == -1)
 			best = lines;
